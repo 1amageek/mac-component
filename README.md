@@ -1,6 +1,6 @@
-# SplitView
+# mac-component
 
-SplitView is a small SwiftUI package for macOS split layouts backed by `NSSplitView`.
+mac-component is a small SwiftUI package for reusable macOS interface components.
 
 It provides:
 
@@ -16,7 +16,7 @@ It provides:
 
 ```swift
 dependencies: [
-    .package(url: "https://github.com/1amageek/SplitView.git", branch: "main")
+    .package(url: "https://github.com/1amageek/mac-component.git", branch: "main")
 ]
 ```
 
@@ -24,7 +24,7 @@ dependencies: [
 .target(
     name: "YourApp",
     dependencies: [
-        .product(name: "SplitView", package: "SplitView")
+        .product(name: "MacComponent", package: "mac-component")
     ]
 )
 ```
@@ -32,7 +32,7 @@ dependencies: [
 ## NativeVSplitView
 
 ```swift
-import SplitView
+import MacComponent
 import SwiftUI
 
 NativeVSplitView {

@@ -3,14 +3,14 @@
 import PackageDescription
 
 let package = Package(
-    name: "SplitView",
+    name: "mac-component",
     platforms: [
         .macOS(.v15),
     ],
     products: [
-        .library(name: "SplitView", targets: ["SplitView"]),
+        .library(name: "MacComponent", targets: ["MacComponent"]),
     ],
     targets: [
-        .target(name: "SplitView"),
+        .target(name: "MacComponent"),
     ]
 )
