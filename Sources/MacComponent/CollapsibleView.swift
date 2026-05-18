@@ -149,7 +149,7 @@ private extension EnvironmentValues {
     }
 }
 
-#Preview("Collapsible View") {
+#Preview("Collapsible View Content Zero") {
     @Previewable @State var isExpanded = true
 
     CollapsibleView(isExpanded: $isExpanded) {
@@ -182,24 +182,14 @@ private extension EnvironmentValues {
         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
         .background(Color(nsColor: .windowBackgroundColor))
     } content: {
-        ScrollView {
-            VStack(alignment: .leading, spacing: 8) {
-                Text("2026-05-18T10:42:20Z runtime started")
-                Text("2026-05-18T10:42:22Z request accepted")
-                Text("2026-05-18T10:42:23Z response completed")
-            }
-            .font(.system(.caption, design: .monospaced))
-            .textSelection(.enabled)
-            .padding(12)
-            .frame(maxWidth: .infinity, alignment: .leading)
-        }
-        .background(Color(nsColor: .textBackgroundColor))
+        Color.clear
+            .frame(height: 0)
     } header: {
         Label("Runtime Output", systemImage: "text.alignleft")
             .font(.headline)
     }
     .topPaneHeight(minimum: 260)
-    .bottomPaneHeight(minimum: 120)
+    .bottomPaneHeight(minimum: 0)
     .dividerDragStrip(height: 10)
     .collapsibleHeaderHeight(40)
     .frame(width: 820, height: 620)

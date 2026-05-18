@@ -178,19 +178,6 @@ private struct VSplitPaneRepresentable: NSViewRepresentable {
 
         func splitView(
             _ splitView: NSSplitView,
-            drawDividerIn dirtyRect: NSRect
-        ) {
-            NSColor.separatorColor.setFill()
-            NSBezierPath.fill(NSRect(
-                x: dirtyRect.minX,
-                y: dirtyRect.midY - 0.5,
-                width: dirtyRect.width,
-                height: 1
-            ))
-        }
-
-        func splitView(
-            _ splitView: NSSplitView,
             additionalEffectiveRectOfDividerAt dividerIndex: Int
         ) -> NSRect {
             guard splitView.arrangedSubviews.count > dividerIndex + 1 else {
@@ -209,18 +196,21 @@ private struct VSplitPaneRepresentable: NSViewRepresentable {
     }
 }
 
-#Preview("V Split Pane") {
+#Preview("V Split Pane Top Zero") {
     VSplitPane {
+        Color.clear
+            .frame(height: 0)
+
         VStack(alignment: .leading, spacing: 16) {
             HStack(spacing: 12) {
-                Image(systemName: "square.and.pencil")
+                Image(systemName: "terminal")
                     .font(.system(size: 28))
                     .foregroundStyle(.secondary)
 
                 VStack(alignment: .leading, spacing: 4) {
-                    Text("Editor")
+                    Text("Output")
                         .font(.largeTitle.weight(.semibold))
-                    Text("Top pane resizes freely")
+                    Text("Top pane is zero height")
                         .foregroundStyle(.secondary)
                 }
 
@@ -228,10 +218,10 @@ private struct VSplitPaneRepresentable: NSViewRepresentable {
             }
 
             List {
-                Section("Sections") {
-                    Label("Canvas", systemImage: "rectangle.and.pencil.and.ellipsis")
-                    Label("Properties", systemImage: "slider.horizontal.3")
-                    Label("History", systemImage: "clock.arrow.circlepath")
+                Section("Log Lines") {
+                    Label("build started", systemImage: "play")
+                    Label("resolving package graph", systemImage: "shippingbox")
+                    Label("build complete", systemImage: "checkmark.circle")
                 }
             }
             .listStyle(.inset)
@@ -239,12 +229,20 @@ private struct VSplitPaneRepresentable: NSViewRepresentable {
         .padding(24)
         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
         .background(Color(nsColor: .windowBackgroundColor))
+    }
+    .topPaneHeight(minimum: 0)
+    .bottomPaneHeight(minimum: 160)
+    .dividerDragStrip(height: 10)
+    .frame(width: 620, height: 420)
+}
 
+#Preview("V Split Pane Bottom Zero") {
+    VSplitPane {
         VStack(alignment: .leading, spacing: 0) {
             HStack(spacing: 8) {
-                Image(systemName: "terminal")
+                Image(systemName: "square.and.pencil")
                     .foregroundStyle(.secondary)
-                Text("Output")
+                Text("Editor")
                     .font(.headline)
                 Spacer()
             }
@@ -255,20 +253,23 @@ private struct VSplitPaneRepresentable: NSViewRepresentable {
 
             ScrollView {
                 VStack(alignment: .leading, spacing: 8) {
-                    Text("2026-05-18T10:40:12Z build started")
-                    Text("2026-05-18T10:40:13Z resolving package graph")
-                    Text("2026-05-18T10:40:14Z build complete")
+                    Text("Canvas")
+                    Text("Properties")
+                    Text("History")
                 }
-                .font(.system(.caption, design: .monospaced))
+                .font(.body)
                 .textSelection(.enabled)
                 .padding(12)
                 .frame(maxWidth: .infinity, alignment: .leading)
             }
         }
         .background(Color(nsColor: .textBackgroundColor))
+
+        Color.clear
+            .frame(height: 0)
     }
-    .topPaneHeight(minimum: 260)
-    .bottomPaneHeight(minimum: 120)
+    .topPaneHeight(minimum: 160)
+    .bottomPaneHeight(minimum: 0)
     .dividerDragStrip(height: 10)
-    .frame(width: 820, height: 620)
+    .frame(width: 620, height: 420)
 }

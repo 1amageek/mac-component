@@ -24,6 +24,7 @@ private enum PreviewSidebarItem: String, CaseIterable, Identifiable {
 
 private struct MacSidebarHSplitPreview: View {
     @State private var selection: PreviewSidebarItem? = .dashboard
+    @State private var isInspectorPresented = true
 
     var body: some View {
         NavigationSplitView {
@@ -47,7 +48,7 @@ private struct MacSidebarHSplitPreview: View {
     private var detail: some View {
         HSplitPane {
             overview
-            inspector
+            details
         }
         .leadingPaneWidth(minimum: 520)
         .trailingPaneWidth(minimum: 260)
@@ -64,7 +65,18 @@ private struct MacSidebarHSplitPreview: View {
                     Image(systemName: "arrow.clockwise")
                 }
                 .help("Refresh")
+
+                Button {
+                    isInspectorPresented.toggle()
+                } label: {
+                    Image(systemName: "sidebar.trailing")
+                }
+                .help(isInspectorPresented ? "Hide Inspector" : "Show Inspector")
             }
+        }
+        .inspector(isPresented: $isInspectorPresented) {
+            inspector
+                .inspectorColumnWidth(min: 240, ideal: 280, max: 360)
         }
     }
 
@@ -109,12 +121,12 @@ private struct MacSidebarHSplitPreview: View {
         .background(Color(nsColor: .windowBackgroundColor))
     }
 
-    private var inspector: some View {
+    private var details: some View {
         VStack(alignment: .leading, spacing: 0) {
             HStack(spacing: 8) {
-                Image(systemName: "sidebar.trailing")
+                Image(systemName: "list.bullet.rectangle")
                     .foregroundStyle(.secondary)
-                Text("Inspector")
+                Text("Details")
                     .font(.headline)
                 Spacer()
             }
@@ -144,6 +156,26 @@ private struct MacSidebarHSplitPreview: View {
             .scrollContentBackground(.hidden)
         }
         .background(Color(nsColor: .controlBackgroundColor))
+    }
+
+    private var inspector: some View {
+        Form {
+            Section("Selection") {
+                LabeledContent("Item", value: selection?.rawValue ?? "None")
+                LabeledContent("Scope", value: "Workspace")
+            }
+
+            Section("Runtime") {
+                Toggle("Collect Metrics", isOn: .constant(true))
+                Toggle("Notify on Warning", isOn: .constant(true))
+            }
+
+            Section("Metadata") {
+                LabeledContent("Owner", value: "Operations")
+                LabeledContent("Environment", value: "Local")
+            }
+        }
+        .formStyle(.grouped)
     }
 
     private func metric(title: String, value: String) -> some View {
@@ -177,6 +209,7 @@ private struct MacSidebarHSplitPreview: View {
 
 private struct MacSidebarVSplitPreview: View {
     @State private var selection: PreviewSidebarItem? = .logs
+    @State private var isInspectorPresented = true
 
     var body: some View {
         NavigationSplitView {
@@ -217,7 +250,18 @@ private struct MacSidebarVSplitPreview: View {
                     Image(systemName: "arrow.clockwise")
                 }
                 .help("Refresh")
+
+                Button {
+                    isInspectorPresented.toggle()
+                } label: {
+                    Image(systemName: "sidebar.trailing")
+                }
+                .help(isInspectorPresented ? "Hide Inspector" : "Show Inspector")
             }
+        }
+        .inspector(isPresented: $isInspectorPresented) {
+            inspector
+                .inspectorColumnWidth(min: 240, ideal: 280, max: 360)
         }
     }
 
@@ -291,6 +335,27 @@ private struct MacSidebarVSplitPreview: View {
             }
         }
         .background(Color(nsColor: .textBackgroundColor))
+    }
+
+    private var inspector: some View {
+        Form {
+            Section("Selection") {
+                LabeledContent("Item", value: selection?.rawValue ?? "None")
+                LabeledContent("View", value: "Timeline")
+            }
+
+            Section("Filters") {
+                Toggle("Show Info", isOn: .constant(true))
+                Toggle("Show Debug", isOn: .constant(false))
+                Toggle("Show Errors", isOn: .constant(true))
+            }
+
+            Section("Session") {
+                LabeledContent("Target", value: "staging")
+                LabeledContent("Status", value: "Live")
+            }
+        }
+        .formStyle(.grouped)
     }
 
     private func metric(title: String, value: String) -> some View {

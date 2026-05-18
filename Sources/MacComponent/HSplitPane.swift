@@ -178,19 +178,6 @@ private struct HSplitPaneRepresentable: NSViewRepresentable {
 
         func splitView(
             _ splitView: NSSplitView,
-            drawDividerIn dirtyRect: NSRect
-        ) {
-            NSColor.separatorColor.setFill()
-            NSBezierPath.fill(NSRect(
-                x: dirtyRect.midX - 0.5,
-                y: dirtyRect.minY,
-                width: 1,
-                height: dirtyRect.height
-            ))
-        }
-
-        func splitView(
-            _ splitView: NSSplitView,
             additionalEffectiveRectOfDividerAt dividerIndex: Int
         ) -> NSRect {
             guard splitView.arrangedSubviews.count > dividerIndex + 1 else {
@@ -209,18 +196,21 @@ private struct HSplitPaneRepresentable: NSViewRepresentable {
     }
 }
 
-#Preview("H Split Pane") {
+#Preview("H Split Pane Leading Zero") {
     HSplitPane {
+        Color.clear
+            .frame(width: 0)
+
         VStack(alignment: .leading, spacing: 16) {
             HStack(spacing: 12) {
-                Image(systemName: "rectangle.3.group")
+                Image(systemName: "sidebar.trailing")
                     .font(.system(size: 28))
                     .foregroundStyle(.secondary)
 
                 VStack(alignment: .leading, spacing: 4) {
-                    Text("Workspace")
+                    Text("Details")
                         .font(.largeTitle.weight(.semibold))
-                    Text("Leading pane resizes freely")
+                    Text("Leading pane is zero width")
                         .foregroundStyle(.secondary)
                 }
 
@@ -228,10 +218,10 @@ private struct HSplitPaneRepresentable: NSViewRepresentable {
             }
 
             List {
-                Section("Documents") {
-                    Label("Overview", systemImage: "doc.text")
-                    Label("Editor", systemImage: "square.and.pencil")
-                    Label("Timeline", systemImage: "chart.xyaxis.line")
+                Section("Selection") {
+                    Label("api-gateway", systemImage: "network")
+                    Label("Ready", systemImage: "checkmark.circle")
+                    Label("Port 18080", systemImage: "number")
                 }
             }
             .listStyle(.inset)
@@ -239,12 +229,20 @@ private struct HSplitPaneRepresentable: NSViewRepresentable {
         .padding(24)
         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
         .background(Color(nsColor: .windowBackgroundColor))
+    }
+    .leadingPaneWidth(minimum: 0)
+    .trailingPaneWidth(minimum: 220)
+    .dividerDragStrip(width: 10)
+    .frame(width: 520, height: 360)
+}
 
+#Preview("H Split Pane Trailing Zero") {
+    HSplitPane {
         VStack(alignment: .leading, spacing: 0) {
             HStack(spacing: 8) {
-                Image(systemName: "sidebar.trailing")
+                Image(systemName: "rectangle.3.group")
                     .foregroundStyle(.secondary)
-                Text("Inspector")
+                Text("Workspace")
                     .font(.headline)
                 Spacer()
             }
@@ -255,18 +253,26 @@ private struct HSplitPaneRepresentable: NSViewRepresentable {
 
             Form {
                 Section("Layout") {
-                    LabeledContent("Leading Min", value: "320 px")
-                    LabeledContent("Trailing Min", value: "220 px")
+                    LabeledContent("Leading Min", value: "220 px")
+                    LabeledContent("Trailing Min", value: "0 px")
                     LabeledContent("Drag Strip", value: "10 px")
+                }
+
+                Section("Services") {
+                    LabeledContent("Running", value: "4")
+                    LabeledContent("Warnings", value: "2")
                 }
             }
             .formStyle(.grouped)
             .scrollContentBackground(.hidden)
         }
         .background(Color(nsColor: .controlBackgroundColor))
+
+        Color.clear
+            .frame(width: 0)
     }
-    .leadingPaneWidth(minimum: 320)
-    .trailingPaneWidth(minimum: 220)
+    .leadingPaneWidth(minimum: 220)
+    .trailingPaneWidth(minimum: 0)
     .dividerDragStrip(width: 10)
-    .frame(width: 900, height: 560)
+    .frame(width: 520, height: 360)
 }
