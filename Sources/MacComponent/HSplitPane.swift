@@ -4,6 +4,8 @@ import SwiftUI
 public struct HSplitPane<Content: View>: View {
     @Environment(\.hSplitPaneMinimumLeadingPaneWidth) private var minimumLeadingPaneWidth
     @Environment(\.hSplitPaneMinimumTrailingPaneWidth) private var minimumTrailingPaneWidth
+    @Environment(\.hSplitPaneMaximumLeadingPaneWidth) private var maximumLeadingPaneWidth
+    @Environment(\.hSplitPaneMaximumTrailingPaneWidth) private var maximumTrailingPaneWidth
     @Environment(\.hSplitPaneDividerDragStripWidth) private var dividerDragStripWidth
 
     private let content: Content
@@ -18,6 +20,8 @@ public struct HSplitPane<Content: View>: View {
                 configuration: HSplitPaneConfiguration(
                     minimumLeadingPaneWidth: minimumLeadingPaneWidth,
                     minimumTrailingPaneWidth: minimumTrailingPaneWidth,
+                    maximumLeadingPaneWidth: maximumLeadingPaneWidth,
+                    maximumTrailingPaneWidth: maximumTrailingPaneWidth,
                     dividerDragStripWidth: dividerDragStripWidth
                 ),
                 subviews: subviews.map { AnyView($0) }
@@ -35,6 +39,14 @@ public extension View {
         environment(\.hSplitPaneMinimumTrailingPaneWidth, width)
     }
 
+    func leadingPaneWidth(maximum width: CGFloat) -> some View {
+        environment(\.hSplitPaneMaximumLeadingPaneWidth, width)
+    }
+
+    func trailingPaneWidth(maximum width: CGFloat) -> some View {
+        environment(\.hSplitPaneMaximumTrailingPaneWidth, width)
+    }
+
     func dividerDragStrip(width: CGFloat) -> some View {
         environment(\.hSplitPaneDividerDragStripWidth, width)
     }
@@ -43,15 +55,21 @@ public extension View {
 private struct HSplitPaneConfiguration: Sendable {
     var minimumLeadingPaneWidth: CGFloat
     var minimumTrailingPaneWidth: CGFloat
+    var maximumLeadingPaneWidth: CGFloat
+    var maximumTrailingPaneWidth: CGFloat
     var dividerDragStripWidth: CGFloat
 
     init(
         minimumLeadingPaneWidth: CGFloat = 200,
         minimumTrailingPaneWidth: CGFloat = 80,
+        maximumLeadingPaneWidth: CGFloat = .infinity,
+        maximumTrailingPaneWidth: CGFloat = .infinity,
         dividerDragStripWidth: CGFloat = 8
     ) {
         self.minimumLeadingPaneWidth = minimumLeadingPaneWidth
         self.minimumTrailingPaneWidth = minimumTrailingPaneWidth
+        self.maximumLeadingPaneWidth = max(maximumLeadingPaneWidth, minimumLeadingPaneWidth)
+        self.maximumTrailingPaneWidth = max(maximumTrailingPaneWidth, minimumTrailingPaneWidth)
         self.dividerDragStripWidth = dividerDragStripWidth
     }
 }
@@ -62,6 +80,14 @@ private struct HSplitPaneMinimumLeadingPaneWidthKey: EnvironmentKey {
 
 private struct HSplitPaneMinimumTrailingPaneWidthKey: EnvironmentKey {
     static let defaultValue: CGFloat = 80
+}
+
+private struct HSplitPaneMaximumLeadingPaneWidthKey: EnvironmentKey {
+    static let defaultValue: CGFloat = .infinity
+}
+
+private struct HSplitPaneMaximumTrailingPaneWidthKey: EnvironmentKey {
+    static let defaultValue: CGFloat = .infinity
 }
 
 private struct HSplitPaneDividerDragStripWidthKey: EnvironmentKey {
@@ -77,6 +103,16 @@ private extension EnvironmentValues {
     var hSplitPaneMinimumTrailingPaneWidth: CGFloat {
         get { self[HSplitPaneMinimumTrailingPaneWidthKey.self] }
         set { self[HSplitPaneMinimumTrailingPaneWidthKey.self] = newValue }
+    }
+
+    var hSplitPaneMaximumLeadingPaneWidth: CGFloat {
+        get { self[HSplitPaneMaximumLeadingPaneWidthKey.self] }
+        set { self[HSplitPaneMaximumLeadingPaneWidthKey.self] = newValue }
+    }
+
+    var hSplitPaneMaximumTrailingPaneWidth: CGFloat {
+        get { self[HSplitPaneMaximumTrailingPaneWidthKey.self] }
+        set { self[HSplitPaneMaximumTrailingPaneWidthKey.self] = newValue }
     }
 
     var hSplitPaneDividerDragStripWidth: CGFloat {
@@ -161,7 +197,11 @@ private struct HSplitPaneRepresentable: NSViewRepresentable {
             constrainMinCoordinate proposedMinimumPosition: CGFloat,
             ofSubviewAt dividerIndex: Int
         ) -> CGFloat {
-            max(proposedMinimumPosition, configuration.minimumLeadingPaneWidth)
+            max(
+                proposedMinimumPosition,
+                configuration.minimumLeadingPaneWidth,
+                splitView.bounds.width - configuration.maximumTrailingPaneWidth
+            )
         }
 
         func splitView(
@@ -169,7 +209,11 @@ private struct HSplitPaneRepresentable: NSViewRepresentable {
             constrainMaxCoordinate proposedMaximumPosition: CGFloat,
             ofSubviewAt dividerIndex: Int
         ) -> CGFloat {
-            min(proposedMaximumPosition, splitView.bounds.width - configuration.minimumTrailingPaneWidth)
+            min(
+                proposedMaximumPosition,
+                configuration.maximumLeadingPaneWidth,
+                splitView.bounds.width - configuration.minimumTrailingPaneWidth
+            )
         }
 
         func splitView(_ splitView: NSSplitView, canCollapseSubview subview: NSView) -> Bool {

@@ -4,6 +4,8 @@ import SwiftUI
 public struct VSplitPane<Content: View>: View {
     @Environment(\.vSplitPaneMinimumTopPaneHeight) private var minimumTopPaneHeight
     @Environment(\.vSplitPaneMinimumBottomPaneHeight) private var minimumBottomPaneHeight
+    @Environment(\.vSplitPaneMaximumTopPaneHeight) private var maximumTopPaneHeight
+    @Environment(\.vSplitPaneMaximumBottomPaneHeight) private var maximumBottomPaneHeight
     @Environment(\.vSplitPaneDividerDragStripHeight) private var dividerDragStripHeight
 
     private let content: Content
@@ -18,6 +20,8 @@ public struct VSplitPane<Content: View>: View {
                 configuration: VSplitPaneConfiguration(
                     minimumTopPaneHeight: minimumTopPaneHeight,
                     minimumBottomPaneHeight: minimumBottomPaneHeight,
+                    maximumTopPaneHeight: maximumTopPaneHeight,
+                    maximumBottomPaneHeight: maximumBottomPaneHeight,
                     dividerDragStripHeight: dividerDragStripHeight
                 ),
                 subviews: subviews.map { AnyView($0) }
@@ -35,6 +39,14 @@ public extension View {
         environment(\.vSplitPaneMinimumBottomPaneHeight, height)
     }
 
+    func topPaneHeight(maximum height: CGFloat) -> some View {
+        environment(\.vSplitPaneMaximumTopPaneHeight, height)
+    }
+
+    func bottomPaneHeight(maximum height: CGFloat) -> some View {
+        environment(\.vSplitPaneMaximumBottomPaneHeight, height)
+    }
+
     func dividerDragStrip(height: CGFloat) -> some View {
         environment(\.vSplitPaneDividerDragStripHeight, height)
     }
@@ -43,15 +55,21 @@ public extension View {
 private struct VSplitPaneConfiguration: Sendable {
     var minimumTopPaneHeight: CGFloat
     var minimumBottomPaneHeight: CGFloat
+    var maximumTopPaneHeight: CGFloat
+    var maximumBottomPaneHeight: CGFloat
     var dividerDragStripHeight: CGFloat
 
     init(
         minimumTopPaneHeight: CGFloat = 200,
         minimumBottomPaneHeight: CGFloat = 80,
+        maximumTopPaneHeight: CGFloat = .infinity,
+        maximumBottomPaneHeight: CGFloat = .infinity,
         dividerDragStripHeight: CGFloat = 8
     ) {
         self.minimumTopPaneHeight = minimumTopPaneHeight
         self.minimumBottomPaneHeight = minimumBottomPaneHeight
+        self.maximumTopPaneHeight = max(maximumTopPaneHeight, minimumTopPaneHeight)
+        self.maximumBottomPaneHeight = max(maximumBottomPaneHeight, minimumBottomPaneHeight)
         self.dividerDragStripHeight = dividerDragStripHeight
     }
 }
@@ -62,6 +80,14 @@ private struct VSplitPaneMinimumTopPaneHeightKey: EnvironmentKey {
 
 private struct VSplitPaneMinimumBottomPaneHeightKey: EnvironmentKey {
     static let defaultValue: CGFloat = 80
+}
+
+private struct VSplitPaneMaximumTopPaneHeightKey: EnvironmentKey {
+    static let defaultValue: CGFloat = .infinity
+}
+
+private struct VSplitPaneMaximumBottomPaneHeightKey: EnvironmentKey {
+    static let defaultValue: CGFloat = .infinity
 }
 
 private struct VSplitPaneDividerDragStripHeightKey: EnvironmentKey {
@@ -77,6 +103,16 @@ private extension EnvironmentValues {
     var vSplitPaneMinimumBottomPaneHeight: CGFloat {
         get { self[VSplitPaneMinimumBottomPaneHeightKey.self] }
         set { self[VSplitPaneMinimumBottomPaneHeightKey.self] = newValue }
+    }
+
+    var vSplitPaneMaximumTopPaneHeight: CGFloat {
+        get { self[VSplitPaneMaximumTopPaneHeightKey.self] }
+        set { self[VSplitPaneMaximumTopPaneHeightKey.self] = newValue }
+    }
+
+    var vSplitPaneMaximumBottomPaneHeight: CGFloat {
+        get { self[VSplitPaneMaximumBottomPaneHeightKey.self] }
+        set { self[VSplitPaneMaximumBottomPaneHeightKey.self] = newValue }
     }
 
     var vSplitPaneDividerDragStripHeight: CGFloat {
@@ -161,7 +197,11 @@ private struct VSplitPaneRepresentable: NSViewRepresentable {
             constrainMinCoordinate proposedMinimumPosition: CGFloat,
             ofSubviewAt dividerIndex: Int
         ) -> CGFloat {
-            max(proposedMinimumPosition, configuration.minimumTopPaneHeight)
+            max(
+                proposedMinimumPosition,
+                configuration.minimumTopPaneHeight,
+                splitView.bounds.height - configuration.maximumBottomPaneHeight
+            )
         }
 
         func splitView(
@@ -169,7 +209,11 @@ private struct VSplitPaneRepresentable: NSViewRepresentable {
             constrainMaxCoordinate proposedMaximumPosition: CGFloat,
             ofSubviewAt dividerIndex: Int
         ) -> CGFloat {
-            min(proposedMaximumPosition, splitView.bounds.height - configuration.minimumBottomPaneHeight)
+            min(
+                proposedMaximumPosition,
+                configuration.maximumTopPaneHeight,
+                splitView.bounds.height - configuration.minimumBottomPaneHeight
+            )
         }
 
         func splitView(_ splitView: NSSplitView, canCollapseSubview subview: NSView) -> Bool {

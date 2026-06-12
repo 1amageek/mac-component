@@ -57,7 +57,9 @@ HSplitPane {
     DetailsView()
 }
 .leadingPaneWidth(minimum: 320)
+.leadingPaneWidth(maximum: 640)
 .trailingPaneWidth(minimum: 220)
+.trailingPaneWidth(maximum: 360)
 .dividerDragStrip(width: 10)
 ```
 
@@ -66,7 +68,9 @@ HSplitPane {
 | Modifier | Default | Meaning |
 |---|---:|---|
 | `leadingPaneWidth(minimum:)` | `200` | Minimum width for the leading pane. |
+| `leadingPaneWidth(maximum:)` | No maximum | Maximum width for the leading pane. |
 | `trailingPaneWidth(minimum:)` | `80` | Minimum width for the trailing pane. |
+| `trailingPaneWidth(maximum:)` | No maximum | Maximum width for the trailing pane. |
 | `dividerDragStrip(width:)` | `8` | Extra horizontal hit area for dragging the divider. |
 
 ### VSplitPane
@@ -80,7 +84,9 @@ VSplitPane {
     OutputView()
 }
 .topPaneHeight(minimum: 240)
+.topPaneHeight(maximum: 520)
 .bottomPaneHeight(minimum: 120)
+.bottomPaneHeight(maximum: 260)
 .dividerDragStrip(height: 10)
 ```
 
@@ -89,7 +95,9 @@ VSplitPane {
 | Modifier | Default | Meaning |
 |---|---:|---|
 | `topPaneHeight(minimum:)` | `200` | Minimum height for the top pane. |
+| `topPaneHeight(maximum:)` | No maximum | Maximum height for the top pane. |
 | `bottomPaneHeight(minimum:)` | `80` | Minimum height for the bottom pane. |
+| `bottomPaneHeight(maximum:)` | No maximum | Maximum height for the bottom pane. |
 | `dividerDragStrip(height:)` | `8` | Extra vertical hit area for dragging the divider. |
 
 ## CollapsibleView
