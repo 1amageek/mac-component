@@ -2,6 +2,8 @@ import AppKit
 import SwiftUI
 
 public struct HSplitPane<Content: View>: View {
+    @Environment(\.hSplitPaneInitialLeadingPaneWidth) private var initialLeadingPaneWidth
+    @Environment(\.hSplitPaneInitialTrailingPaneWidth) private var initialTrailingPaneWidth
     @Environment(\.hSplitPaneMinimumLeadingPaneWidth) private var minimumLeadingPaneWidth
     @Environment(\.hSplitPaneMinimumTrailingPaneWidth) private var minimumTrailingPaneWidth
     @Environment(\.hSplitPaneMaximumLeadingPaneWidth) private var maximumLeadingPaneWidth
@@ -18,6 +20,8 @@ public struct HSplitPane<Content: View>: View {
         Group(subviews: content) { subviews in
             HSplitPaneRepresentable(
                 configuration: HSplitPaneConfiguration(
+                    initialLeadingPaneWidth: initialLeadingPaneWidth,
+                    initialTrailingPaneWidth: initialTrailingPaneWidth,
                     minimumLeadingPaneWidth: minimumLeadingPaneWidth,
                     minimumTrailingPaneWidth: minimumTrailingPaneWidth,
                     maximumLeadingPaneWidth: maximumLeadingPaneWidth,
@@ -31,12 +35,62 @@ public struct HSplitPane<Content: View>: View {
 }
 
 public extension View {
+    func leadingPaneWidth(_ width: CGFloat) -> some View {
+        environment(\.hSplitPaneInitialLeadingPaneWidth, width)
+    }
+
+    func leadingPaneWidth(_ width: CGFloat, minimum minimumWidth: CGFloat) -> some View {
+        leadingPaneWidth(width)
+            .leadingPaneWidth(minimum: minimumWidth)
+    }
+
+    func leadingPaneWidth(_ width: CGFloat, maximum maximumWidth: CGFloat) -> some View {
+        leadingPaneWidth(width)
+            .leadingPaneWidth(maximum: maximumWidth)
+    }
+
+    func leadingPaneWidth(_ width: CGFloat, minimum minimumWidth: CGFloat, maximum maximumWidth: CGFloat) -> some View {
+        leadingPaneWidth(width)
+            .leadingPaneWidth(minimum: minimumWidth)
+            .leadingPaneWidth(maximum: maximumWidth)
+    }
+
+    func trailingPaneWidth(_ width: CGFloat) -> some View {
+        environment(\.hSplitPaneInitialTrailingPaneWidth, width)
+    }
+
+    func trailingPaneWidth(_ width: CGFloat, minimum minimumWidth: CGFloat) -> some View {
+        trailingPaneWidth(width)
+            .trailingPaneWidth(minimum: minimumWidth)
+    }
+
+    func trailingPaneWidth(_ width: CGFloat, maximum maximumWidth: CGFloat) -> some View {
+        trailingPaneWidth(width)
+            .trailingPaneWidth(maximum: maximumWidth)
+    }
+
+    func trailingPaneWidth(_ width: CGFloat, minimum minimumWidth: CGFloat, maximum maximumWidth: CGFloat) -> some View {
+        trailingPaneWidth(width)
+            .trailingPaneWidth(minimum: minimumWidth)
+            .trailingPaneWidth(maximum: maximumWidth)
+    }
+
     func leadingPaneWidth(minimum width: CGFloat) -> some View {
         environment(\.hSplitPaneMinimumLeadingPaneWidth, width)
     }
 
+    func leadingPaneWidth(minimum minimumWidth: CGFloat, maximum maximumWidth: CGFloat) -> some View {
+        leadingPaneWidth(minimum: minimumWidth)
+            .leadingPaneWidth(maximum: maximumWidth)
+    }
+
     func trailingPaneWidth(minimum width: CGFloat) -> some View {
         environment(\.hSplitPaneMinimumTrailingPaneWidth, width)
+    }
+
+    func trailingPaneWidth(minimum minimumWidth: CGFloat, maximum maximumWidth: CGFloat) -> some View {
+        trailingPaneWidth(minimum: minimumWidth)
+            .trailingPaneWidth(maximum: maximumWidth)
     }
 
     func leadingPaneWidth(maximum width: CGFloat) -> some View {
@@ -53,6 +107,8 @@ public extension View {
 }
 
 private struct HSplitPaneConfiguration: Sendable {
+    var initialLeadingPaneWidth: CGFloat?
+    var initialTrailingPaneWidth: CGFloat?
     var minimumLeadingPaneWidth: CGFloat
     var minimumTrailingPaneWidth: CGFloat
     var maximumLeadingPaneWidth: CGFloat
@@ -60,18 +116,30 @@ private struct HSplitPaneConfiguration: Sendable {
     var dividerDragStripWidth: CGFloat
 
     init(
+        initialLeadingPaneWidth: CGFloat? = nil,
+        initialTrailingPaneWidth: CGFloat? = nil,
         minimumLeadingPaneWidth: CGFloat = 200,
         minimumTrailingPaneWidth: CGFloat = 80,
         maximumLeadingPaneWidth: CGFloat = .infinity,
         maximumTrailingPaneWidth: CGFloat = .infinity,
         dividerDragStripWidth: CGFloat = 8
     ) {
+        self.initialLeadingPaneWidth = initialLeadingPaneWidth
+        self.initialTrailingPaneWidth = initialTrailingPaneWidth
         self.minimumLeadingPaneWidth = minimumLeadingPaneWidth
         self.minimumTrailingPaneWidth = minimumTrailingPaneWidth
         self.maximumLeadingPaneWidth = max(maximumLeadingPaneWidth, minimumLeadingPaneWidth)
         self.maximumTrailingPaneWidth = max(maximumTrailingPaneWidth, minimumTrailingPaneWidth)
         self.dividerDragStripWidth = dividerDragStripWidth
     }
+}
+
+private struct HSplitPaneInitialLeadingPaneWidthKey: EnvironmentKey {
+    static let defaultValue: CGFloat? = nil
+}
+
+private struct HSplitPaneInitialTrailingPaneWidthKey: EnvironmentKey {
+    static let defaultValue: CGFloat? = nil
 }
 
 private struct HSplitPaneMinimumLeadingPaneWidthKey: EnvironmentKey {
@@ -95,6 +163,16 @@ private struct HSplitPaneDividerDragStripWidthKey: EnvironmentKey {
 }
 
 private extension EnvironmentValues {
+    var hSplitPaneInitialLeadingPaneWidth: CGFloat? {
+        get { self[HSplitPaneInitialLeadingPaneWidthKey.self] }
+        set { self[HSplitPaneInitialLeadingPaneWidthKey.self] = newValue }
+    }
+
+    var hSplitPaneInitialTrailingPaneWidth: CGFloat? {
+        get { self[HSplitPaneInitialTrailingPaneWidthKey.self] }
+        set { self[HSplitPaneInitialTrailingPaneWidthKey.self] = newValue }
+    }
+
     var hSplitPaneMinimumLeadingPaneWidth: CGFloat {
         get { self[HSplitPaneMinimumLeadingPaneWidthKey.self] }
         set { self[HSplitPaneMinimumLeadingPaneWidthKey.self] = newValue }
@@ -126,17 +204,20 @@ private struct HSplitPaneRepresentable: NSViewRepresentable {
     let subviews: [AnyView]
 
     func makeNSView(context: Context) -> NSSplitView {
-        let splitView = NSSplitView()
+        let splitView = HSplitPaneSplitView()
         splitView.isVertical = true
         splitView.dividerStyle = .thin
         splitView.delegate = context.coordinator
+        splitView.layoutHandler = { [weak coordinator = context.coordinator] splitView in
+            coordinator?.applyPaneWidthConstraints(to: splitView)
+        }
         context.coordinator.configuration = configuration
         rebuildSubviews(splitView)
         return splitView
     }
 
     func updateNSView(_ splitView: NSSplitView, context: Context) {
-        context.coordinator.configuration = configuration
+        context.coordinator.update(configuration: configuration)
 
         let existing = splitView.arrangedSubviews
         if existing.count == subviews.count {
@@ -146,8 +227,11 @@ private struct HSplitPaneRepresentable: NSViewRepresentable {
                 }
             }
         } else {
+            context.coordinator.resetInitialPaneWidth()
             rebuildSubviews(splitView)
         }
+
+        context.coordinator.applyPaneWidthConstraints(to: splitView)
     }
 
     func makeCoordinator() -> Coordinator {
@@ -187,9 +271,102 @@ private struct HSplitPaneRepresentable: NSViewRepresentable {
 
     final class Coordinator: NSObject, NSSplitViewDelegate {
         var configuration: HSplitPaneConfiguration
+        private var isApplyingPaneWidthConstraints = false
+        private var hasAppliedInitialPaneWidth = false
 
         init(configuration: HSplitPaneConfiguration) {
             self.configuration = configuration
+        }
+
+        func update(configuration: HSplitPaneConfiguration) {
+            if self.configuration.initialLeadingPaneWidth != configuration.initialLeadingPaneWidth ||
+                self.configuration.initialTrailingPaneWidth != configuration.initialTrailingPaneWidth {
+                hasAppliedInitialPaneWidth = false
+            }
+
+            self.configuration = configuration
+        }
+
+        func resetInitialPaneWidth() {
+            hasAppliedInitialPaneWidth = false
+        }
+
+        @MainActor
+        func applyPaneWidthConstraints(to splitView: NSSplitView) {
+            guard !isApplyingPaneWidthConstraints,
+                  splitView.arrangedSubviews.count > 1,
+                  splitView.bounds.width > 0 else {
+                return
+            }
+
+            let currentPosition = splitView.arrangedSubviews[0].frame.width
+            let initialPosition = initialDividerPosition(totalWidth: splitView.bounds.width)
+            let fallbackPosition = currentPosition.isFinite
+                ? currentPosition
+                : configuration.minimumLeadingPaneWidth
+            let proposedPosition = initialPosition ?? fallbackPosition
+            let constrainedPosition = constrainedDividerPosition(
+                proposedPosition,
+                totalWidth: splitView.bounds.width
+            )
+
+            if initialPosition != nil {
+                hasAppliedInitialPaneWidth = true
+            }
+
+            guard constrainedPosition.isFinite,
+                  abs(currentPosition - constrainedPosition) > 0.5 else {
+                return
+            }
+
+            isApplyingPaneWidthConstraints = true
+            splitView.setPosition(constrainedPosition, ofDividerAt: 0)
+            isApplyingPaneWidthConstraints = false
+        }
+
+        private func initialDividerPosition(totalWidth: CGFloat) -> CGFloat? {
+            guard !hasAppliedInitialPaneWidth else {
+                return nil
+            }
+
+            if let trailingPaneWidth = configuration.initialTrailingPaneWidth,
+               trailingPaneWidth.isFinite {
+                return totalWidth - trailingPaneWidth
+            }
+
+            if let leadingPaneWidth = configuration.initialLeadingPaneWidth,
+               leadingPaneWidth.isFinite {
+                return leadingPaneWidth
+            }
+
+            return nil
+        }
+
+        private func constrainedDividerPosition(
+            _ proposedPosition: CGFloat,
+            totalWidth: CGFloat
+        ) -> CGFloat {
+            let minimumPosition = max(
+                0,
+                configuration.minimumLeadingPaneWidth,
+                totalWidth - configuration.maximumTrailingPaneWidth
+            )
+            let maximumPosition = min(
+                totalWidth,
+                configuration.maximumLeadingPaneWidth,
+                totalWidth - configuration.minimumTrailingPaneWidth
+            )
+
+            guard minimumPosition <= maximumPosition else {
+                let proposedTrailingPaneWidth = totalWidth - proposedPosition
+                let trailingPaneWidth = min(
+                    max(proposedTrailingPaneWidth, configuration.minimumTrailingPaneWidth),
+                    configuration.maximumTrailingPaneWidth
+                )
+                return min(max(totalWidth - trailingPaneWidth, 0), totalWidth)
+            }
+
+            return min(max(proposedPosition, minimumPosition), maximumPosition)
         }
 
         func splitView(
@@ -240,6 +417,112 @@ private struct HSplitPaneRepresentable: NSViewRepresentable {
     }
 }
 
+private final class HSplitPaneSplitView: NSSplitView {
+    var layoutHandler: (@MainActor (NSSplitView) -> Void)?
+
+    override func layout() {
+        super.layout()
+        layoutHandler?(self)
+    }
+}
+
+private func hSplitPanePreviewPanel(
+    title: String,
+    target: String,
+    systemImage: String,
+    color: Color
+) -> some View {
+    GeometryReader { proxy in
+        VStack(alignment: .leading, spacing: 12) {
+            HStack(spacing: 8) {
+                Image(systemName: systemImage)
+                    .foregroundStyle(color)
+                Text(title)
+                    .font(.headline)
+                Spacer()
+            }
+
+            Text(target)
+                .font(.subheadline)
+                .foregroundStyle(.secondary)
+
+            Text("\(Int(proxy.size.width.rounded())) px")
+                .font(.system(.title2, design: .monospaced).weight(.semibold))
+
+            Spacer()
+        }
+        .padding(16)
+        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
+        .background(color.opacity(0.12))
+    }
+}
+
+#Preview("H Split Pane Trailing Initial Width") {
+    HSplitPane {
+        hSplitPanePreviewPanel(
+            title: "Content",
+            target: "Flexible leading pane",
+            systemImage: "rectangle.3.group",
+            color: .blue
+        )
+
+        hSplitPanePreviewPanel(
+            title: "Inspector",
+            target: "Initial width 120 px",
+            systemImage: "sidebar.trailing",
+            color: .green
+        )
+    }
+    .leadingPaneWidth(minimum: 180)
+    .trailingPaneWidth(120, minimum: 80, maximum: 220)
+    .dividerDragStrip(width: 10)
+    .frame(width: 520, height: 280)
+}
+
+#Preview("H Split Pane Trailing Maximum Clamp") {
+    HSplitPane {
+        hSplitPanePreviewPanel(
+            title: "Content",
+            target: "Trailing request exceeds max",
+            systemImage: "rectangle.3.group",
+            color: .indigo
+        )
+
+        hSplitPanePreviewPanel(
+            title: "Inspector",
+            target: "Requested 240 px, max 120 px",
+            systemImage: "lock.rectangle",
+            color: .orange
+        )
+    }
+    .leadingPaneWidth(minimum: 180)
+    .trailingPaneWidth(240, minimum: 80, maximum: 120)
+    .dividerDragStrip(width: 10)
+    .frame(width: 520, height: 280)
+}
+
+#Preview("H Split Pane Leading Initial Width") {
+    HSplitPane {
+        hSplitPanePreviewPanel(
+            title: "Navigator",
+            target: "Initial width 160 px",
+            systemImage: "sidebar.leading",
+            color: .purple
+        )
+
+        hSplitPanePreviewPanel(
+            title: "Detail",
+            target: "Flexible trailing pane",
+            systemImage: "doc.text",
+            color: .teal
+        )
+    }
+    .leadingPaneWidth(160, minimum: 120, maximum: 220)
+    .trailingPaneWidth(minimum: 200)
+    .dividerDragStrip(width: 10)
+    .frame(width: 520, height: 280)
+}
+
 #Preview("H Split Pane Leading Zero") {
     HSplitPane {
         Color.clear
@@ -274,7 +557,7 @@ private struct HSplitPaneRepresentable: NSViewRepresentable {
         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
         .background(Color(nsColor: .windowBackgroundColor))
     }
-    .leadingPaneWidth(minimum: 0)
+    .leadingPaneWidth(0, minimum: 0)
     .trailingPaneWidth(minimum: 220)
     .dividerDragStrip(width: 10)
     .frame(width: 520, height: 360)
@@ -316,7 +599,7 @@ private struct HSplitPaneRepresentable: NSViewRepresentable {
             .frame(width: 0)
     }
     .leadingPaneWidth(minimum: 220)
-    .trailingPaneWidth(minimum: 0)
+    .trailingPaneWidth(0, minimum: 0)
     .dividerDragStrip(width: 10)
     .frame(width: 520, height: 360)
 }

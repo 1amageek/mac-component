@@ -50,8 +50,8 @@ private struct MacSidebarHSplitPreview: View {
             overview
             details
         }
-        .leadingPaneWidth(minimum: 520)
-        .trailingPaneWidth(minimum: 260)
+        .leadingPaneWidth(minimum: 200)
+        .trailingPaneWidth(260, minimum: 220, maximum: 320)
         .toolbar {
             ToolbarItemGroup {
                 Button {
@@ -236,7 +236,7 @@ private struct MacSidebarVSplitPreview: View {
             console
         }
         .topPaneHeight(minimum: 300)
-        .bottomPaneHeight(minimum: 160)
+        .bottomPaneHeight(220, minimum: 160)
         .toolbar {
             ToolbarItemGroup {
                 Button {

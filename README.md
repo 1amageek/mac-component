@@ -56,10 +56,8 @@ HSplitPane {
     PrimaryView()
     DetailsView()
 }
-.leadingPaneWidth(minimum: 320)
-.leadingPaneWidth(maximum: 640)
-.trailingPaneWidth(minimum: 220)
-.trailingPaneWidth(maximum: 360)
+.leadingPaneWidth(minimum: 320, maximum: 640)
+.trailingPaneWidth(280, minimum: 220, maximum: 360)
 .dividerDragStrip(width: 10)
 ```
 
@@ -67,10 +65,10 @@ HSplitPane {
 
 | Modifier | Default | Meaning |
 |---|---:|---|
-| `leadingPaneWidth(minimum:)` | `200` | Minimum width for the leading pane. |
-| `leadingPaneWidth(maximum:)` | No maximum | Maximum width for the leading pane. |
-| `trailingPaneWidth(minimum:)` | `80` | Minimum width for the trailing pane. |
-| `trailingPaneWidth(maximum:)` | No maximum | Maximum width for the trailing pane. |
+| `leadingPaneWidth(_:minimum:maximum:)` | AppKit / `200` / No maximum | Initial, minimum, and maximum width for the leading pane. |
+| `trailingPaneWidth(_:minimum:maximum:)` | AppKit / `80` / No maximum | Initial, minimum, and maximum width for the trailing pane. |
+| `leadingPaneWidth(minimum:maximum:)` | `200` / No maximum | Minimum and maximum width for the leading pane. |
+| `trailingPaneWidth(minimum:maximum:)` | `80` / No maximum | Minimum and maximum width for the trailing pane. |
 | `dividerDragStrip(width:)` | `8` | Extra horizontal hit area for dragging the divider. |
 
 ### VSplitPane
@@ -83,10 +81,8 @@ VSplitPane {
     EditorView()
     OutputView()
 }
-.topPaneHeight(minimum: 240)
-.topPaneHeight(maximum: 520)
-.bottomPaneHeight(minimum: 120)
-.bottomPaneHeight(maximum: 260)
+.topPaneHeight(minimum: 240, maximum: 520)
+.bottomPaneHeight(180, minimum: 120, maximum: 260)
 .dividerDragStrip(height: 10)
 ```
 
@@ -94,10 +90,10 @@ VSplitPane {
 
 | Modifier | Default | Meaning |
 |---|---:|---|
-| `topPaneHeight(minimum:)` | `200` | Minimum height for the top pane. |
-| `topPaneHeight(maximum:)` | No maximum | Maximum height for the top pane. |
-| `bottomPaneHeight(minimum:)` | `80` | Minimum height for the bottom pane. |
-| `bottomPaneHeight(maximum:)` | No maximum | Maximum height for the bottom pane. |
+| `topPaneHeight(_:minimum:maximum:)` | AppKit / `200` / No maximum | Initial, minimum, and maximum height for the top pane. |
+| `bottomPaneHeight(_:minimum:maximum:)` | AppKit / `80` / No maximum | Initial, minimum, and maximum height for the bottom pane. |
+| `topPaneHeight(minimum:maximum:)` | `200` / No maximum | Minimum and maximum height for the top pane. |
+| `bottomPaneHeight(minimum:maximum:)` | `80` / No maximum | Minimum and maximum height for the bottom pane. |
 | `dividerDragStrip(height:)` | `8` | Extra vertical hit area for dragging the divider. |
 
 ## CollapsibleView
